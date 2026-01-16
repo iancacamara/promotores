@@ -3,6 +3,15 @@ import pandas as pd
 CSV_URL = "https://docs.google.com/spreadsheets/d/1xINj1dg33ynLut2f4hg366qAk2mwO9yr/export?format=csv&gid=1784284167"
 TETO_CLT = 176
 
+
+def fmt_num(x: float) -> str:
+    try:
+        x = float(x)
+    except Exception:
+        x = 0.0
+    return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 def safe_nunique(series: pd.Series) -> int:
     if series is None:
         return 0
@@ -10,145 +19,140 @@ def safe_nunique(series: pd.Series) -> int:
     s = s[s != ""]
     return int(s.nunique())
 
+
 def safe_sum(series: pd.Series) -> float:
     if series is None:
         return 0.0
-    return float(series.fillna(0).sum())
+    return float(pd.to_numeric(series, errors="coerce").fillna(0).sum())
 
-def main():
-    df = pd.read_csv(CSV_URL)
 
-# Normaliza nomes de colunas (remove espaços extras e quebras)
-df.columns = [str(c).replace("\n", " ").strip() for c in df.columns]
-
-# Função pra localizar coluna mesmo com variações
-def pick_col(possiveis):
+def pick_col(df: pd.DataFrame, possiveis: list[str]) -> str | None:
+    # match direto
     for p in possiveis:
         if p in df.columns:
             return p
-    # tenta match ignorando caixa e espaços duplos
-    norm = {c.lower().replace("  ", " "): c for c in df.columns}
+    # match "normalizado"
+    norm = {str(c).lower().replace("\n", " ").strip().replace("  ", " "): c for c in df.columns}
     for p in possiveis:
-        key = p.lower().replace("  ", " ")
+        key = p.lower().replace("\n", " ").strip().replace("  ", " ")
         if key in norm:
             return norm[key]
     return None
 
-COL_PROMOTOR = pick_col(["PROMOTOR"])
-COL_SUPERVISOR = pick_col(["SUPERVISOR FINAL"])
-COL_LOJA = pick_col(["NOME FANTASIA"])
-COL_REGIONAL = pick_col(["REGIONAL VOLUME"])
-COL_CIDADE = pick_col(["CIDADE"])
-COL_BANDEIRA = pick_col(["BANDEIRA"])
-COL_ORIGEM = pick_col(["ORIGEM"])
-COL_FREQ = pick_col(["FREQ.SEMANA", "FREQ SEMANA", "FREQ"])
-COL_TEMPO = pick_col(["TEMPO DE ATENDIMENTO POR VISITA", "TEMPO ATENDIMENTO POR VISITA", "TEMPO"])
 
-# Se não achar promotor, para e mostra as colunas no HTML (debug)
-if COL_PROMOTOR is None:
-    debug_cols = "<br>".join(df.columns)
+def write_debug_html(df: pd.DataFrame, msg: str) -> None:
+    debug_cols = "<br>".join([str(c) for c in df.columns])
     html = f"""
-    <html><body style="font-family:Arial;padding:20px;">
-    <h1>Erro: coluna PROMOTOR não encontrada</h1>
-    <p>Colunas lidas do Google Sheets (CSV):</p>
-    <div style="padding:12px;border:1px solid #ddd;border-radius:8px;">{debug_cols}</div>
-    <p>Abra sua aba JANEIRO_2026 e confirme se a coluna chama exatamente PROMOTOR.</p>
-    </body></html>
-    """
+<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><title>Dashboard Atendimento - Janeiro (Debug)</title></head>
+<body style="font-family:Arial;padding:20px;max-width:1200px;margin:0 auto;">
+  <h1>Dashboard Atendimento - Janeiro</h1>
+  <h2 style="color:#b00020;">Erro de configuração</h2>
+  <p>{msg}</p>
+  <h3>Colunas lidas do Google Sheets (CSV)</h3>
+  <div style="padding:12px;border:1px solid #ddd;border-radius:10px;line-height:1.6;">
+    {debug_cols}
+  </div>
+</body>
+</html>
+"""
     with open("docs/index.html", "w", encoding="utf-8") as f:
         f.write(html)
-    return
 
 
-    # filtro ORIGEM
-    if COL_ORIGEM is not None:
-        df["ORIGEM"] = df["ORIGEM"].astype(str).str.strip()
-        df = df[df["ORIGEM"].isin(["CAMIL", "SPOT"])]
+def main():
+    df = pd.read_csv(CSV_URL)
 
-    # padronizar colunas principais (sem renomear; só limpando espaços)
-    for col in ["PROMOTOR", "SUPERVISOR FINAL", "NOME FANTASIA", "REGIONAL VOLUME", "CIDADE", "BANDEIRA"]:
-        if col in df.columns:
+    # Normaliza nomes de colunas
+    df.columns = [str(c).replace("\n", " ").strip() for c in df.columns]
+
+    # Mapeia colunas (aceitando variações)
+    COL_PROMOTOR = pick_col(df, ["PROMOTOR"])
+    COL_SUPERVISOR = pick_col(df, ["SUPERVISOR FINAL"])
+    COL_LOJA = pick_col(df, ["NOME FANTASIA"])
+    COL_REGIONAL = pick_col(df, ["REGIONAL VOLUME"])
+    COL_CIDADE = pick_col(df, ["CIDADE"])
+    COL_BANDEIRA = pick_col(df, ["BANDEIRA"])
+    COL_ORIGEM = pick_col(df, ["ORIGEM"])
+    COL_FREQ = pick_col(df, ["FREQ.SEMANA", "FREQ SEMANA", "FREQ"])
+    COL_TEMPO = pick_col(df, ["TEMPO DE ATENDIMENTO POR VISITA", "TEMPO ATENDIMENTO POR VISITA", "TEMPO"])
+
+    # Validações mínimas
+    if COL_PROMOTOR is None:
+        write_debug_html(df, "A coluna PROMOTOR não foi encontrada no CSV. Verifique o nome exato na aba JANEIRO_2026.")
+        return
+
+    if COL_ORIGEM is None:
+        write_debug_html(df, "A coluna ORIGEM não foi encontrada no CSV. Verifique se ela existe e está no cabeçalho.")
+        return
+
+    if COL_FREQ is None or COL_TEMPO is None:
+        write_debug_html(df, "Não encontrei FREQ.SEMANA e/ou TEMPO DE ATENDIMENTO POR VISITA no CSV. Verifique os nomes no cabeçalho.")
+        return
+
+    # Filtro ORIGEM
+    df[COL_ORIGEM] = df[COL_ORIGEM].astype(str).str.strip()
+    df = df[df[COL_ORIGEM].isin(["CAMIL", "SPOT"])].copy()
+
+    # Limpa texto das colunas principais (se existirem)
+    for col in [COL_PROMOTOR, COL_SUPERVISOR, COL_LOJA, COL_REGIONAL, COL_CIDADE, COL_BANDEIRA]:
+        if col is not None and col in df.columns:
             df[col] = df[col].astype(str).str.strip()
 
-    # garantir numéricos
-    for col in ["FREQ.SEMANA", "TEMPO DE ATENDIMENTO POR VISITA"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+    # Converte numéricos
+    df[COL_FREQ] = pd.to_numeric(df[COL_FREQ], errors="coerce").fillna(0)
+    df[COL_TEMPO] = pd.to_numeric(df[COL_TEMPO], errors="coerce").fillna(0)
 
-    # =========================
-    # CÁLCULOS (Horas / Teto)
-    # =========================
-    df["HORAS_SEMANA_LOJA"] = df.get(COL_FREQ, 0) * df.get(COL_TEMPO, 0)
+    # Cálculo horas semana loja
+    df["HORAS_SEMANA_LOJA"] = df[COL_FREQ] * df[COL_TEMPO]
 
-    # horas por promotor
-    horas_semana_promotor = (
+    # Horas por promotor
+    horas_prom = (
         df.groupby(COL_PROMOTOR, dropna=False)["HORAS_SEMANA_LOJA"]
         .sum()
         .reset_index()
         .rename(columns={"HORAS_SEMANA_LOJA": "HORAS_SEMANA_PROMOTOR"})
     )
-    horas_semana_promotor["HORAS_MES_PREVISTA"] = horas_semana_promotor["HORAS_SEMANA_PROMOTOR"] * 4
-    horas_semana_promotor["SALDO_HORAS"] = TETO_CLT - horas_semana_promotor["HORAS_MES_PREVISTA"]
-    horas_semana_promotor["ULTRAPASSOU_TETO"] = horas_semana_promotor["HORAS_MES_PREVISTA"] > TETO_CLT
-    horas_semana_promotor["HORAS_EXCEDENTES"] = (horas_semana_promotor["HORAS_MES_PREVISTA"] - TETO_CLT).clip(lower=0)
 
-    # =========================
+    horas_prom["HORAS_MES_PREVISTA"] = horas_prom["HORAS_SEMANA_PROMOTOR"] * 4
+    horas_prom["SALDO_HORAS"] = TETO_CLT - horas_prom["HORAS_MES_PREVISTA"]
+    horas_prom["ULTRAPASSOU_TETO"] = horas_prom["HORAS_MES_PREVISTA"] > TETO_CLT
+    horas_prom["HORAS_EXCEDENTES"] = (horas_prom["HORAS_MES_PREVISTA"] - TETO_CLT).clip(lower=0)
+
     # KPIs
-    # =========================
-    total_linhas = len(df)
-    qtd_promotores = safe_nunique(df["PROMOTOR"]) if "PROMOTOR" in df.columns else 0
-    qtd_supervisores = safe_nunique(df["SUPERVISOR FINAL"]) if "SUPERVISOR FINAL" in df.columns else 0
-    qtd_lojas = safe_nunique(df["NOME FANTASIA"]) if "NOME FANTASIA" in df.columns else 0
-    qtd_bandeiras = safe_nunique(df["BANDEIRA"]) if "BANDEIRA" in df.columns else 0
-    qtd_cidades = safe_nunique(df["CIDADE"]) if "CIDADE" in df.columns else 0
+    total_linhas = int(len(df))
+    qtd_promotores = safe_nunique(df[COL_PROMOTOR])
+    qtd_supervisores = safe_nunique(df[COL_SUPERVISOR]) if COL_SUPERVISOR in df.columns else 0
+    qtd_lojas = safe_nunique(df[COL_LOJA]) if COL_LOJA in df.columns else 0
+    qtd_bandeiras = safe_nunique(df[COL_BANDEIRA]) if COL_BANDEIRA in df.columns else 0
+    qtd_cidades = safe_nunique(df[COL_CIDADE]) if COL_CIDADE in df.columns else 0
 
-    total_horas_mes_prevista = safe_sum(horas_semana_promotor["HORAS_MES_PREVISTA"])
-    qtd_promotores_acima_teto = int(horas_semana_promotor["ULTRAPASSOU_TETO"].sum())
-    total_horas_excedentes = safe_sum(horas_semana_promotor["HORAS_EXCEDENTES"])
+    total_horas_mes_prevista = safe_sum(horas_prom["HORAS_MES_PREVISTA"])
+    qtd_promotores_acima_teto = int(horas_prom["ULTRAPASSOU_TETO"].sum())
+    total_horas_excedentes = safe_sum(horas_prom["HORAS_EXCEDENTES"])
 
-    # =========================
-    # MÉDIAS (gestão)
-    # =========================
-    # promotores por supervisor
-    if "SUPERVISOR FINAL" in df.columns and "PROMOTOR" in df.columns:
-        prom_por_sup = (
-            df.dropna(subset=["SUPERVISOR FINAL", "PROMOTOR"])
-              .groupby("SUPERVISOR FINAL")["PROMOTOR"]
-              .nunique()
-        )
+    # Médias
+    if COL_SUPERVISOR in df.columns:
+        prom_por_sup = df.dropna(subset=[COL_SUPERVISOR, COL_PROMOTOR]).groupby(COL_SUPERVISOR)[COL_PROMOTOR].nunique()
         media_prom_por_sup = float(prom_por_sup.mean()) if len(prom_por_sup) else 0.0
     else:
         media_prom_por_sup = 0.0
 
-    # lojas por supervisor
-    if "SUPERVISOR FINAL" in df.columns and "NOME FANTASIA" in df.columns:
-        lojas_por_sup = (
-            df.dropna(subset=["SUPERVISOR FINAL", "NOME FANTASIA"])
-              .groupby("SUPERVISOR FINAL")["NOME FANTASIA"]
-              .nunique()
-        )
+    if COL_SUPERVISOR in df.columns and COL_LOJA in df.columns:
+        lojas_por_sup = df.dropna(subset=[COL_SUPERVISOR, COL_LOJA]).groupby(COL_SUPERVISOR)[COL_LOJA].nunique()
         media_lojas_por_sup = float(lojas_por_sup.mean()) if len(lojas_por_sup) else 0.0
     else:
         media_lojas_por_sup = 0.0
 
-    # lojas por promotor
-    if "PROMOTOR" in df.columns and "NOME FANTASIA" in df.columns:
-        lojas_por_prom = (
-            df.dropna(subset=["PROMOTOR", "NOME FANTASIA"])
-              .groupby("PROMOTOR")["NOME FANTASIA"]
-              .nunique()
-        )
+    if COL_LOJA in df.columns:
+        lojas_por_prom = df.dropna(subset=[COL_PROMOTOR, COL_LOJA]).groupby(COL_PROMOTOR)[COL_LOJA].nunique()
         media_lojas_por_prom = float(lojas_por_prom.mean()) if len(lojas_por_prom) else 0.0
     else:
         media_lojas_por_prom = 0.0
 
-    # =========================
-    # TABELA RESUMO PROMOTORES (top 20 por horas)
-    # =========================
-    top_promotores = horas_semana_promotor.sort_values("HORAS_MES_PREVISTA", ascending=False).head(20)
-
-    def fmt_num(x: float) -> str:
-        return f"{x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    # Top 20 promotores
+    top = horas_prom.sort_values("HORAS_MES_PREVISTA", ascending=False).head(20)
 
     cards_html = f"""
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
@@ -167,12 +171,11 @@ if COL_PROMOTOR is None:
     </div>
     """
 
-    # tabela top promotores
     rows = []
-    for _, r in top_promotores.iterrows():
-        prom = str(r.get("PROMOTOR", "")).strip()
-        hm = float(r.get("HORAS_MES_PREVISTA", 0))
+    for _, r in top.iterrows():
+        prom = str(r.get(COL_PROMOTOR, "")).strip()
         hs = float(r.get("HORAS_SEMANA_PROMOTOR", 0))
+        hm = float(r.get("HORAS_MES_PREVISTA", 0))
         saldo = float(r.get("SALDO_HORAS", 0))
         exced = float(r.get("HORAS_EXCEDENTES", 0))
         flag = "SIM" if bool(r.get("ULTRAPASSOU_TETO", False)) else "NÃO"
@@ -227,10 +230,10 @@ if COL_PROMOTOR is None:
   {tabela_html}
 
   <details style="margin-top:20px;">
-    <summary style="cursor:pointer;font-weight:bold;">Ver colunas encontradas (debug)</summary>
-    <ul>
-      {''.join([f"<li>{c}</li>" for c in list(df.columns)])}
-    </ul>
+    <summary style="cursor:pointer;font-weight:bold;">Ver colunas lidas (debug)</summary>
+    <div style="padding:12px;border:1px solid #ddd;border-radius:10px;line-height:1.6;">
+      {"<br>".join([str(c) for c in df.columns])}
+    </div>
   </details>
 </body>
 </html>
@@ -238,6 +241,7 @@ if COL_PROMOTOR is None:
 
     with open("docs/index.html", "w", encoding="utf-8") as f:
         f.write(html)
+
 
 if __name__ == "__main__":
     main()

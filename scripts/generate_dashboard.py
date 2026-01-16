@@ -18,8 +18,50 @@ def safe_sum(series: pd.Series) -> float:
 def main():
     df = pd.read_csv(CSV_URL)
 
+# Normaliza nomes de colunas (remove espaços extras e quebras)
+df.columns = [str(c).replace("\n", " ").strip() for c in df.columns]
+
+# Função pra localizar coluna mesmo com variações
+def pick_col(possiveis):
+    for p in possiveis:
+        if p in df.columns:
+            return p
+    # tenta match ignorando caixa e espaços duplos
+    norm = {c.lower().replace("  ", " "): c for c in df.columns}
+    for p in possiveis:
+        key = p.lower().replace("  ", " ")
+        if key in norm:
+            return norm[key]
+    return None
+
+COL_PROMOTOR = pick_col(["PROMOTOR"])
+COL_SUPERVISOR = pick_col(["SUPERVISOR FINAL"])
+COL_LOJA = pick_col(["NOME FANTASIA"])
+COL_REGIONAL = pick_col(["REGIONAL VOLUME"])
+COL_CIDADE = pick_col(["CIDADE"])
+COL_BANDEIRA = pick_col(["BANDEIRA"])
+COL_ORIGEM = pick_col(["ORIGEM"])
+COL_FREQ = pick_col(["FREQ.SEMANA", "FREQ SEMANA", "FREQ"])
+COL_TEMPO = pick_col(["TEMPO DE ATENDIMENTO POR VISITA", "TEMPO ATENDIMENTO POR VISITA", "TEMPO"])
+
+# Se não achar promotor, para e mostra as colunas no HTML (debug)
+if COL_PROMOTOR is None:
+    debug_cols = "<br>".join(df.columns)
+    html = f"""
+    <html><body style="font-family:Arial;padding:20px;">
+    <h1>Erro: coluna PROMOTOR não encontrada</h1>
+    <p>Colunas lidas do Google Sheets (CSV):</p>
+    <div style="padding:12px;border:1px solid #ddd;border-radius:8px;">{debug_cols}</div>
+    <p>Abra sua aba JANEIRO_2026 e confirme se a coluna chama exatamente PROMOTOR.</p>
+    </body></html>
+    """
+    with open("docs/index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+    return
+
+
     # filtro ORIGEM
-    if "ORIGEM" in df.columns:
+    if COL_ORIGEM is not None:
         df["ORIGEM"] = df["ORIGEM"].astype(str).str.strip()
         df = df[df["ORIGEM"].isin(["CAMIL", "SPOT"])]
 
@@ -36,11 +78,11 @@ def main():
     # =========================
     # CÁLCULOS (Horas / Teto)
     # =========================
-    df["HORAS_SEMANA_LOJA"] = df.get("FREQ.SEMANA", 0) * df.get("TEMPO DE ATENDIMENTO POR VISITA", 0)
+    df["HORAS_SEMANA_LOJA"] = df.get(COL_FREQ, 0) * df.get(COL_TEMPO, 0)
 
     # horas por promotor
     horas_semana_promotor = (
-        df.groupby("PROMOTOR", dropna=False)["HORAS_SEMANA_LOJA"]
+        df.groupby(COL_PROMOTOR, dropna=False)["HORAS_SEMANA_LOJA"]
         .sum()
         .reset_index()
         .rename(columns={"HORAS_SEMANA_LOJA": "HORAS_SEMANA_PROMOTOR"})

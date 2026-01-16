@@ -1,19 +1,240 @@
 
-    <!DOCTYPE html>
-    <html lang="pt-br">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Dashboard Atendimento - Janeiro</title>
-    </head>
-    <body style="font-family: Arial; padding: 20px;">
-      <h1>Dashboard Atendimento - Janeiro</h1>
-      <p><b>Linhas válidas após filtro ORIGEM:</b> 2383</p>
-      <h2>Colunas encontradas</h2>
-      <ul>
-        <li>ORIGEM</li><li>MODELO DE ATENDIMENTO</li><li>SUPERVISOR AREA CAMIL _COD</li><li>REGIONAL VOLUME</li><li>REGIONAL</li><li>SUPERVISOR CAMIL </li><li>COORDENADOR </li><li>VENDAS TIPO  </li><li>EXECUTIVO / REPRESENTANTE</li><li>EMAIL VENDEDOR / REPRESENTANTE</li><li>COORDENADOR / SUPERVISOR VENDAS</li><li>EMAIL SUPERVISOR DE VENDAS</li><li>GERENTE VENDAS</li><li>EMAIL GERENTE VENDAS</li><li>GERENTE REGIONAL</li><li>EMAIL GERENTE REGIONAL</li><li>DIRETOR REGIONAL</li><li>EMAIL DIRETOR REGIONAL</li><li>CANAL</li><li>CANAL DE VENDAS </li><li>MATRIZ ATTR</li><li>COD_LOJA</li><li>CNPJ</li><li>BANDEIRA</li><li>QUANTIDADE CHECKOUTS</li><li>CLASSIFICAÇAO LOJA - CHECKOUT</li><li>NOME FANTASIA</li><li>LOGRADOURO</li><li>CEP</li><li>BAIRRO</li><li>CIDADE</li><li>UF</li><li>COD_ROTA</li><li>ROTA FINAL</li><li>SUPERVISOR FINAL</li><li>MATRICULA</li><li>COD_PESSOA</li><li>PROMOTOR </li><li>INICIO FÉRIAS</li><li>MÊS</li><li>FIM FÉRIAS</li><li>DIAS FÉRIAS</li><li>OBS.</li><li>FREQ.SEMANA</li><li>SEG  - ORDEM VISITA </li><li>TER - ORDEM VISITA </li><li>QUA - ORDEM VISITA </li><li>QUI  - ORDEM VISITA </li><li>SEX  - ORDEM VISITA </li><li>SAB - ORDEM VISITA </li><li>TEMPO DE ATENDIMENTO POR VISITA</li><li>TOTAL DE HORAS SEMANA</li><li>CARGA HORARIA ROTA</li><li>TOTAL DE HORAS MÊS LOJA</li><li>QLP REAL</li><li>QLP_TOTAL</li><li>TOTAL LOJAS / BANDEIRA</li><li>ACCERA</li><li>BACKLIGHT 2025</li><li>LOJAS TOP 40</li><li>GERENTE LOJA</li><li>TELEFONE LOJA</li><li>STATUS ROTA</li><li>COLIGADAS </li>
-      </ul>
-      <p>Próximo passo: montar os KPIs e gráficos.</p>
-    </body>
-    </html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Atendimento - Janeiro</title>
+</head>
+<body style="font-family: Arial; padding: 20px; max-width: 1200px; margin: 0 auto;">
+  <h1>Dashboard Atendimento - Janeiro</h1>
+  <p style="color:#555;">
+    Fonte: Google Sheets (aba JANEIRO_2026) | Atualização automática via GitHub Actions (a cada 1h)
+  </p>
+
+  
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Linhas válidas (CAMIL/SPOT)</b><div style="font-size:26px;">2383</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Promotores</b><div style="font-size:26px;">764</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Supervisores</b><div style="font-size:26px;">35</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Lojas (NOME FANTASIA)</b><div style="font-size:26px;">2380</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Bandeiras</b><div style="font-size:26px;">127</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Cidades</b><div style="font-size:26px;">299</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Total horas mês (previsto)</b><div style="font-size:26px;">0,00</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Promotores &gt; 176h</b><div style="font-size:26px;">0</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Horas excedentes (total)</b><div style="font-size:26px;">0,00</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média promotores / supervisor</b><div style="font-size:26px;">21,91</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média lojas / supervisor</b><div style="font-size:26px;">68,06</div></div>
+      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média lojas / promotor</b><div style="font-size:26px;">3,12</div></div>
+    </div>
     
+
+  
+    <h2 style="margin-top:22px;">Top 20 promotores por horas mês (previsto)</h2>
+    <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f7f7f7;">
+            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Promotor</th>
+            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas semana</th>
+            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (x4)</th>
+            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Saldo até 176</th>
+            <th style="text-align:center;padding:10px;border-bottom:1px solid #eee;">Ultrapassou?</th>
+            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Excedentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>ABNER SPAGIARI DOS SANTOS</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ADILSON DE PAULA CARDOZO</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ADRIANA CRISTINA SANTOS DE LIMA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ADRIELLI BEATRIZ ROSSI</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>AINAIDERAN STEFANE SOUZA DE OLIVEIRA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALAN CRISTHYAN DE OLIVEIRA LIMA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALAN MARTINS DOS SANTOS</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALBA JENNIFER DE OLIVEIRA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALBERIO SILVA DOS SANTOS</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALCIDES MARTINS JUNIOR</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALDO PEREIRA DOS SANTOS</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALESSANDRA CARDOSO SILVA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEX JUNIO DE OLIVEIRA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEX SANDRO CALHEIROS DA SILVA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEX VANDER MOREIRA DA SILVA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEXANDER DE SOUZA TAVARES</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEXANDRE BATISTA DA SILVEIRA FILHO</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEXANDRE DO NASCIMENTO DE JESUS COSTA</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEXANDRE FERREIRA DE MEDEIROS</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+          <tr>
+            <td>ALEXANDRE PEREIRA DELLEVEDOV</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">0,00</td>
+            <td style="text-align:right;">176,00</td>
+            <td style="text-align:center;">NÃO</td>
+            <td style="text-align:right;">0,00</td>
+          </tr>
+        
+        </tbody>
+      </table>
+    </div>
+    
+
+  <details style="margin-top:20px;">
+    <summary style="cursor:pointer;font-weight:bold;">Ver colunas lidas (debug)</summary>
+    <div style="padding:12px;border:1px solid #ddd;border-radius:10px;line-height:1.6;">
+      ORIGEM<br>MODELO DE ATENDIMENTO<br>SUPERVISOR AREA CAMIL _COD<br>REGIONAL VOLUME<br>REGIONAL<br>SUPERVISOR CAMIL<br>COORDENADOR<br>VENDAS TIPO<br>EXECUTIVO / REPRESENTANTE<br>EMAIL VENDEDOR / REPRESENTANTE<br>COORDENADOR / SUPERVISOR VENDAS<br>EMAIL SUPERVISOR DE VENDAS<br>GERENTE VENDAS<br>EMAIL GERENTE VENDAS<br>GERENTE REGIONAL<br>EMAIL GERENTE REGIONAL<br>DIRETOR REGIONAL<br>EMAIL DIRETOR REGIONAL<br>CANAL<br>CANAL DE VENDAS<br>MATRIZ ATTR<br>COD_LOJA<br>CNPJ<br>BANDEIRA<br>QUANTIDADE CHECKOUTS<br>CLASSIFICAÇAO LOJA - CHECKOUT<br>NOME FANTASIA<br>LOGRADOURO<br>CEP<br>BAIRRO<br>CIDADE<br>UF<br>COD_ROTA<br>ROTA FINAL<br>SUPERVISOR FINAL<br>MATRICULA<br>COD_PESSOA<br>PROMOTOR<br>INICIO FÉRIAS<br>MÊS<br>FIM FÉRIAS<br>DIAS FÉRIAS<br>OBS.<br>FREQ.SEMANA<br>SEG  - ORDEM VISITA<br>TER - ORDEM VISITA<br>QUA - ORDEM VISITA<br>QUI  - ORDEM VISITA<br>SEX  - ORDEM VISITA<br>SAB - ORDEM VISITA<br>TEMPO DE ATENDIMENTO POR VISITA<br>TOTAL DE HORAS SEMANA<br>CARGA HORARIA ROTA<br>TOTAL DE HORAS MÊS LOJA<br>QLP REAL<br>QLP_TOTAL<br>TOTAL LOJAS / BANDEIRA<br>ACCERA<br>BACKLIGHT 2025<br>LOJAS TOP 40<br>GERENTE LOJA<br>TELEFONE LOJA<br>STATUS ROTA<br>COLIGADAS<br>HORAS_SEMANA_LOJA
+    </div>
+  </details>
+</body>
+</html>

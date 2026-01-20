@@ -1,792 +1,253 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Atendimento - Janeiro</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body style="font-family: Arial; padding: 20px; max-width: 1200px; margin: 0 auto;">
-  <h1>Dashboard Atendimento - Janeiro</h1>
-  <p style="color:#555;">
-    Fonte: Google Sheets (aba JANEIRO_2026) | Atualização automática via GitHub Actions (a cada 1h)
-  </p>
 
-  
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Linhas válidas (CAMIL/SPOT)</b><div style="font-size:26px;">2383</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Promotores</b><div style="font-size:26px;">764</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Supervisores</b><div style="font-size:26px;">35</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Lojas (NOME FANTASIA)</b><div style="font-size:26px;">2380</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Bandeiras</b><div style="font-size:26px;">127</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Cidades</b><div style="font-size:26px;">299</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Total horas mês (previsto)</b><div style="font-size:26px;">0,00</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Promotores &gt; 176h</b><div style="font-size:26px;">0</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Horas excedentes (total)</b><div style="font-size:26px;">0,00</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média promotores / supervisor</b><div style="font-size:26px;">21,91</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média lojas / supervisor</b><div style="font-size:26px;">68,06</div></div>
-      <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média lojas / promotor</b><div style="font-size:26px;">3,12</div></div>
+<body class="bg-slate-50 text-slate-900">
+  <div class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold">Dashboard Atendimento - Janeiro</h1>
+        <p class="text-slate-500 text-sm">
+          ORIGEM: <span class="font-medium">CAMIL, SPOT</span> (filtro obrigatório) • Atualiza via GitHub Actions
+        </p>
+      </div>
+
+      <div class="text-right">
+        <div class="text-xs text-slate-500">Registros</div>
+        <div id="kpiRegistros" class="text-lg font-semibold">—</div>
+      </div>
     </div>
-    
 
-  
-        <h2 style="margin-top:22px;">Resumo por Regional Volume</h2>
-        <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <thead>
-              <tr style="background:#f7f7f7;">
-                <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Regional</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Supervisores</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Promotores</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Lojas</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Cidades</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Média lojas/promotor</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (regional)</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Prom. &gt; 176h</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas excedentes</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              <tr>
-                <td>CO</td>
-                <td style="text-align:right;">6</td>
-                <td style="text-align:right;">55</td>
-                <td style="text-align:right;">106</td>
-                <td style="text-align:right;">19</td>
-                <td style="text-align:right;">1,93</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>GSP</td>
-                <td style="text-align:right;">11</td>
-                <td style="text-align:right;">116</td>
-                <td style="text-align:right;">269</td>
-                <td style="text-align:right;">62</td>
-                <td style="text-align:right;">2,32</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>ISP</td>
-                <td style="text-align:right;">3</td>
-                <td style="text-align:right;">53</td>
-                <td style="text-align:right;">138</td>
-                <td style="text-align:right;">33</td>
-                <td style="text-align:right;">2,60</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>KEY ACCOUNT I</td>
-                <td style="text-align:right;">10</td>
-                <td style="text-align:right;">109</td>
-                <td style="text-align:right;">108</td>
-                <td style="text-align:right;">60</td>
-                <td style="text-align:right;">0,99</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>KEY ACCOUNT II</td>
-                <td style="text-align:right;">11</td>
-                <td style="text-align:right;">111</td>
-                <td style="text-align:right;">235</td>
-                <td style="text-align:right;">47</td>
-                <td style="text-align:right;">2,12</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>MGES</td>
-                <td style="text-align:right;">7</td>
-                <td style="text-align:right;">196</td>
-                <td style="text-align:right;">956</td>
-                <td style="text-align:right;">94</td>
-                <td style="text-align:right;">4,88</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>NORDESTE</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">105</td>
-                <td style="text-align:right;">225</td>
-                <td style="text-align:right;">44</td>
-                <td style="text-align:right;">2,14</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>NORTE</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1,00</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>RIMES</td>
-                <td style="text-align:right;">2</td>
-                <td style="text-align:right;">56</td>
-                <td style="text-align:right;">159</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">2,84</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>SUL</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">63</td>
-                <td style="text-align:right;">183</td>
-                <td style="text-align:right;">39</td>
-                <td style="text-align:right;">2,90</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-            </tbody>
-          </table>
+    <!-- Filtros -->
+    <div class="mt-6 bg-white border border-slate-200 rounded-xl p-4">
+      <div class="flex items-center gap-2 text-slate-700 font-medium mb-3">
+        <span class="text-slate-400">⎘</span> Filtros
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div>
+          <label class="text-xs text-slate-500">Regional</label>
+          <select id="fRegional" class="w-full mt-1 rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0">
+            <option value="">Todas</option>
+          </select>
         </div>
-        
-
-  
-        <h2 style="margin-top:22px;">Resumo por Supervisor Final</h2>
-        <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <thead>
-              <tr style="background:#f7f7f7;">
-                <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Supervisor</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Promotores</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Lojas</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Cidades</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Média lojas/promotor</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (time)</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Prom. &gt; 176h</th>
-                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas excedentes</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              <tr>
-                <td>ALEXSANDRO SALLES DE SOUZA</td>
-                <td style="text-align:right;">29</td>
-                <td style="text-align:right;">93</td>
-                <td style="text-align:right;">16</td>
-                <td style="text-align:right;">3,21</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>ANDERSON LUIZ GARCIA ALVES</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">55</td>
-                <td style="text-align:right;">10</td>
-                <td style="text-align:right;">3,24</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>ANDRE GALVAO CHAGAS</td>
-                <td style="text-align:right;">20</td>
-                <td style="text-align:right;">44</td>
-                <td style="text-align:right;">13</td>
-                <td style="text-align:right;">2,20</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>CARINA PRADO TAMEIRAO</td>
-                <td style="text-align:right;">27</td>
-                <td style="text-align:right;">92</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">3,41</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>CARLOS ALBERT PIRES DE JESUS</td>
-                <td style="text-align:right;">27</td>
-                <td style="text-align:right;">66</td>
-                <td style="text-align:right;">6</td>
-                <td style="text-align:right;">2,44</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>CLODOALDO BISPO GOMES</td>
-                <td style="text-align:right;">18</td>
-                <td style="text-align:right;">62</td>
-                <td style="text-align:right;">10</td>
-                <td style="text-align:right;">3,44</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>DANIEL LIMA DE FRANCA</td>
-                <td style="text-align:right;">14</td>
-                <td style="text-align:right;">21</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">1,50</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>EDILSON GONCALVES DE SOUZA</td>
-                <td style="text-align:right;">25</td>
-                <td style="text-align:right;">105</td>
-                <td style="text-align:right;">14</td>
-                <td style="text-align:right;">4,20</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>EDMILSON VIEIRA DE LIMA</td>
-                <td style="text-align:right;">25</td>
-                <td style="text-align:right;">112</td>
-                <td style="text-align:right;">18</td>
-                <td style="text-align:right;">4,48</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>EWERTON JUNIO RIBEIRO</td>
-                <td style="text-align:right;">30</td>
-                <td style="text-align:right;">145</td>
-                <td style="text-align:right;">27</td>
-                <td style="text-align:right;">4,83</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>FRANCIELE OLIVEIRA DA SILVA</td>
-                <td style="text-align:right;">27</td>
-                <td style="text-align:right;">70</td>
-                <td style="text-align:right;">13</td>
-                <td style="text-align:right;">2,59</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>GUSTAVO BORGES AZEVEDO</td>
-                <td style="text-align:right;">8</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">2,12</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>HERSON DA SILVA SOUZA</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">22</td>
-                <td style="text-align:right;">6</td>
-                <td style="text-align:right;">1,29</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>JACKELINE MARIANO RODRIGUES</td>
-                <td style="text-align:right;">18</td>
-                <td style="text-align:right;">65</td>
-                <td style="text-align:right;">9</td>
-                <td style="text-align:right;">3,61</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>JADSON NASCIMENTO GONZAGA</td>
-                <td style="text-align:right;">38</td>
-                <td style="text-align:right;">182</td>
-                <td style="text-align:right;">24</td>
-                <td style="text-align:right;">4,79</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>JEFERSON FRANCA</td>
-                <td style="text-align:right;">25</td>
-                <td style="text-align:right;">60</td>
-                <td style="text-align:right;">14</td>
-                <td style="text-align:right;">2,40</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>JEFFERSON FRANCA</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1</td>
-                <td style="text-align:right;">1,00</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>KAIO MUNIZ LEITE</td>
-                <td style="text-align:right;">19</td>
-                <td style="text-align:right;">31</td>
-                <td style="text-align:right;">2</td>
-                <td style="text-align:right;">1,63</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>KEILA SOARES DOS SANTOS</td>
-                <td style="text-align:right;">11</td>
-                <td style="text-align:right;">21</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">1,91</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>LEONARDO APARECIDO BONIZOL DOS SANTOS</td>
-                <td style="text-align:right;">17</td>
-                <td style="text-align:right;">52</td>
-                <td style="text-align:right;">8</td>
-                <td style="text-align:right;">3,06</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>MARCONI FELIX DO NASCIMENTO JUNIOR</td>
-                <td style="text-align:right;">32</td>
-                <td style="text-align:right;">67</td>
-                <td style="text-align:right;">21</td>
-                <td style="text-align:right;">2,09</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>MARIANE CASTRO DE JESUS</td>
-                <td style="text-align:right;">20</td>
-                <td style="text-align:right;">67</td>
-                <td style="text-align:right;">16</td>
-                <td style="text-align:right;">3,35</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>MATEUS DANTAS DE ALMEIDA</td>
-                <td style="text-align:right;">29</td>
-                <td style="text-align:right;">65</td>
-                <td style="text-align:right;">12</td>
-                <td style="text-align:right;">2,24</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>NATANAEL PEREIRA FEITOSA</td>
-                <td style="text-align:right;">20</td>
-                <td style="text-align:right;">37</td>
-                <td style="text-align:right;">9</td>
-                <td style="text-align:right;">1,85</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>PAULO ANDRE PIMENTA GOMES</td>
-                <td style="text-align:right;">14</td>
-                <td style="text-align:right;">76</td>
-                <td style="text-align:right;">7</td>
-                <td style="text-align:right;">5,43</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>RAMIRIS COSTA</td>
-                <td style="text-align:right;">25</td>
-                <td style="text-align:right;">123</td>
-                <td style="text-align:right;">19</td>
-                <td style="text-align:right;">4,92</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>RAPHAELA CRISTINA DE SOUZA</td>
-                <td style="text-align:right;">23</td>
-                <td style="text-align:right;">77</td>
-                <td style="text-align:right;">15</td>
-                <td style="text-align:right;">3,35</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>RODRIGO ARAUJO RODRIGUES</td>
-                <td style="text-align:right;">28</td>
-                <td style="text-align:right;">47</td>
-                <td style="text-align:right;">4</td>
-                <td style="text-align:right;">1,68</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>SAMARA REGINA DE PAULA DIAS</td>
-                <td style="text-align:right;">35</td>
-                <td style="text-align:right;">178</td>
-                <td style="text-align:right;">13</td>
-                <td style="text-align:right;">5,09</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>THIAGO FERNANDO DE AMORIM</td>
-                <td style="text-align:right;">28</td>
-                <td style="text-align:right;">43</td>
-                <td style="text-align:right;">9</td>
-                <td style="text-align:right;">1,54</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>VAGA EM ABERTO LÍDER - CO</td>
-                <td style="text-align:right;">6</td>
-                <td style="text-align:right;">8</td>
-                <td style="text-align:right;">3</td>
-                <td style="text-align:right;">1,33</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>VAGA EM ABERTO LÍDER - MG</td>
-                <td style="text-align:right;">29</td>
-                <td style="text-align:right;">147</td>
-                <td style="text-align:right;">7</td>
-                <td style="text-align:right;">5,07</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>VAGA EM ABERTO LÍDER - NONE</td>
-                <td style="text-align:right;">31</td>
-                <td style="text-align:right;">75</td>
-                <td style="text-align:right;">14</td>
-                <td style="text-align:right;">2,42</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>VANESSA DE LURDES TEMPONI</td>
-                <td style="text-align:right;">25</td>
-                <td style="text-align:right;">35</td>
-                <td style="text-align:right;">6</td>
-                <td style="text-align:right;">1,40</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-              <tr>
-                <td>WERTHER DOS SANTOS VIEIRA</td>
-                <td style="text-align:right;">9</td>
-                <td style="text-align:right;">21</td>
-                <td style="text-align:right;">2</td>
-                <td style="text-align:right;">2,33</td>
-                <td style="text-align:right;">0,00</td>
-                <td style="text-align:right;">0</td>
-                <td style="text-align:right;">0,00</td>
-              </tr>
-            
-            </tbody>
-          </table>
+        <div>
+          <label class="text-xs text-slate-500">Supervisor</label>
+          <select id="fSupervisor" class="w-full mt-1 rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0">
+            <option value="">Todos</option>
+          </select>
         </div>
-        
-
-  
-    <h2 style="margin-top:22px;">Top 20 promotores por horas mês (previsto)</h2>
-    <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:#f7f7f7;">
-            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Promotor</th>
-            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas semana</th>
-            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (x4)</th>
-            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Saldo até 176</th>
-            <th style="text-align:center;padding:10px;border-bottom:1px solid #eee;">Ultrapassou?</th>
-            <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Excedentes</th>
-          </tr>
-        </thead>
-        <tbody>
-          
-          <tr>
-            <td>ABNER SPAGIARI DOS SANTOS</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ADILSON DE PAULA CARDOZO</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ADRIANA CRISTINA SANTOS DE LIMA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ADRIELLI BEATRIZ ROSSI</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>AINAIDERAN STEFANE SOUZA DE OLIVEIRA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALAN CRISTHYAN DE OLIVEIRA LIMA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALAN MARTINS DOS SANTOS</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALBA JENNIFER DE OLIVEIRA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALBERIO SILVA DOS SANTOS</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALCIDES MARTINS JUNIOR</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALDO PEREIRA DOS SANTOS</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALESSANDRA CARDOSO SILVA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEX JUNIO DE OLIVEIRA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEX SANDRO CALHEIROS DA SILVA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEX VANDER MOREIRA DA SILVA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEXANDER DE SOUZA TAVARES</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEXANDRE BATISTA DA SILVEIRA FILHO</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEXANDRE DO NASCIMENTO DE JESUS COSTA</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEXANDRE FERREIRA DE MEDEIROS</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-          <tr>
-            <td>ALEXANDRE PEREIRA DELLEVEDOV</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">0,00</td>
-            <td style="text-align:right;">176,00</td>
-            <td style="text-align:center;">NÃO</td>
-            <td style="text-align:right;">0,00</td>
-          </tr>
-        
-        </tbody>
-      </table>
+        <div>
+          <label class="text-xs text-slate-500">Promotor</label>
+          <select id="fPromotor" class="w-full mt-1 rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">Bandeira</label>
+          <select id="fBandeira" class="w-full mt-1 rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">Cidade</label>
+          <select id="fCidade" class="w-full mt-1 rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0">
+            <option value="">Todas</option>
+          </select>
+        </div>
+      </div>
     </div>
-    
 
-  <details style="margin-top:20px;">
-    <summary style="cursor:pointer;font-weight:bold;">Ver colunas lidas (debug)</summary>
-    <div style="padding:12px;border:1px solid #ddd;border-radius:10px;line-height:1.6;">
-      ORIGEM<br>MODELO DE ATENDIMENTO<br>SUPERVISOR AREA CAMIL _COD<br>REGIONAL VOLUME<br>REGIONAL<br>SUPERVISOR CAMIL<br>COORDENADOR<br>VENDAS TIPO<br>EXECUTIVO / REPRESENTANTE<br>EMAIL VENDEDOR / REPRESENTANTE<br>COORDENADOR / SUPERVISOR VENDAS<br>EMAIL SUPERVISOR DE VENDAS<br>GERENTE VENDAS<br>EMAIL GERENTE VENDAS<br>GERENTE REGIONAL<br>EMAIL GERENTE REGIONAL<br>DIRETOR REGIONAL<br>EMAIL DIRETOR REGIONAL<br>CANAL<br>CANAL DE VENDAS<br>MATRIZ ATTR<br>COD_LOJA<br>CNPJ<br>BANDEIRA<br>QUANTIDADE CHECKOUTS<br>CLASSIFICAÇAO LOJA - CHECKOUT<br>NOME FANTASIA<br>LOGRADOURO<br>CEP<br>BAIRRO<br>CIDADE<br>UF<br>COD_ROTA<br>ROTA FINAL<br>SUPERVISOR FINAL<br>MATRICULA<br>COD_PESSOA<br>PROMOTOR<br>INICIO FÉRIAS<br>MÊS<br>FIM FÉRIAS<br>DIAS FÉRIAS<br>OBS.<br>FREQ.SEMANA<br>SEG  - ORDEM VISITA<br>TER - ORDEM VISITA<br>QUA - ORDEM VISITA<br>QUI  - ORDEM VISITA<br>SEX  - ORDEM VISITA<br>SAB - ORDEM VISITA<br>TEMPO DE ATENDIMENTO POR VISITA<br>TOTAL DE HORAS SEMANA<br>CARGA HORARIA ROTA<br>TOTAL DE HORAS MÊS LOJA<br>QLP REAL<br>QLP_TOTAL<br>TOTAL LOJAS / BANDEIRA<br>ACCERA<br>BACKLIGHT 2025<br>LOJAS TOP 40<br>GERENTE LOJA<br>TELEFONE LOJA<br>STATUS ROTA<br>COLIGADAS<br>HORAS_SEMANA_LOJA
+    <!-- Tabs -->
+    <div class="mt-5 flex flex-wrap gap-2">
+      <button data-tab="geral" class="tabBtn px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium">Visão Geral</button>
+      <button data-tab="regional" class="tabBtn px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium">Regional</button>
+      <button data-tab="supervisor" class="tabBtn px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium">Supervisor</button>
+      <button data-tab="promotor" class="tabBtn px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium">Promotor</button>
+      <button data-tab="feristas" class="tabBtn px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium">Feristas</button>
     </div>
-  </details>
+
+    <!-- Cards KPIs -->
+    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">PROMOTORES</div>
+        <div id="kpiPromotores" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">SUPERVISORES</div>
+        <div id="kpiSupervisores" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">LOJAS</div>
+        <div id="kpiLojas" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">BANDEIRAS</div>
+        <div id="kpiBandeiras" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">CIDADES</div>
+        <div id="kpiCidades" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">HORAS MÊS</div>
+        <div id="kpiHorasMes" class="text-3xl font-semibold mt-1">—</div>
+        <div class="text-xs text-slate-500 mt-1">Total previsto</div>
+      </div>
+    </div>
+
+    <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">ACIMA DO TETO</div>
+        <div id="kpiAcimaTeto" class="text-3xl font-semibold mt-1">—</div>
+        <div class="text-xs text-slate-500 mt-1">&gt; 176h/mês</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">HORAS EXCEDENTES</div>
+        <div id="kpiHorasExcedentes" class="text-3xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">MÉDIA PROM./SUP.</div>
+        <div id="kpiMediaPromSup" class="text-3xl font-semibold mt-1">—</div>
+        <div class="text-xs text-slate-500 mt-1">Promotores por supervisor</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="text-xs text-slate-500">MÉDIA LOJAS/PROM.</div>
+        <div id="kpiMediaLojasProm" class="text-3xl font-semibold mt-1">—</div>
+        <div class="text-xs text-slate-500 mt-1">Lojas por promotor</div>
+      </div>
+    </div>
+
+    <!-- Conteúdo das abas -->
+    <div class="mt-6">
+      <!-- GERAL -->
+      <section id="tab-geral" class="tabSection">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <div class="bg-white border border-slate-200 rounded-xl p-4">
+            <div class="font-medium">Horas por Regional</div>
+            <div class="text-sm text-slate-500">Total de horas previstas no mês</div>
+            <canvas id="chartHorasRegional" class="mt-3"></canvas>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-4">
+            <div class="font-medium">Lojas por Bandeira</div>
+            <div class="text-sm text-slate-500">Distribuição de lojas atendidas</div>
+            <canvas id="chartLojasBandeira" class="mt-3"></canvas>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-4">
+            <div class="font-medium">Top 10 Cidades</div>
+            <div class="text-sm text-slate-500">Por quantidade de lojas</div>
+            <canvas id="chartTopCidades" class="mt-3"></canvas>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-white border border-slate-200 rounded-xl p-4">
+          <div class="flex items-center justify-between gap-3">
+            <div class="font-medium">Dados Gerais</div>
+            <div class="flex items-center gap-3">
+              <div class="text-xs text-slate-500"><span id="kpiRegistros2">—</span> registros</div>
+              <input id="buscaGeral" placeholder="Buscar..." class="rounded-lg border-slate-200 focus:border-slate-400 focus:ring-0 px-3 py-2 text-sm"/>
+            </div>
+          </div>
+
+          <div class="mt-3 overflow-auto border border-slate-100 rounded-lg">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                  <th class="text-left p-3">ORIGEM</th>
+                  <th class="text-left p-3">SUPERVISOR FINAL</th>
+                  <th class="text-left p-3">PROMOTOR</th>
+                  <th class="text-left p-3">NOME FANTASIA</th>
+                  <th class="text-left p-3">REGIONAL VOLUME</th>
+                  <th class="text-left p-3">CIDADE</th>
+                  <th class="text-left p-3">BANDEIRA</th>
+                  <th class="text-left p-3">FREQ.SEMANA</th>
+                  <th class="text-left p-3">TEMPO/VISITA</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyGeral" class="divide-y divide-slate-100">
+                <tr><td class="p-3 text-slate-500" colspan="9">Carregando dados… (próximo passo: gerar docs/data.json)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- REGIONAL -->
+      <section id="tab-regional" class="tabSection hidden">
+        <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="font-medium">Visão por Regional</div>
+          <div class="text-sm text-slate-500">Tabela (com detalhe por supervisor no próximo passo)</div>
+          <div class="mt-3 text-slate-500 text-sm">Carregando…</div>
+        </div>
+      </section>
+
+      <!-- SUPERVISOR -->
+      <section id="tab-supervisor" class="tabSection hidden">
+        <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="font-medium">Visão por Supervisor</div>
+          <div class="text-sm text-slate-500">Tabela (com detalhe por promotor no próximo passo)</div>
+          <div class="mt-3 text-slate-500 text-sm">Carregando…</div>
+        </div>
+      </section>
+
+      <!-- PROMOTOR -->
+      <section id="tab-promotor" class="tabSection hidden">
+        <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="font-medium">Visão por Promotor</div>
+          <div class="text-sm text-slate-500">Tabela com saldo/teto e detalhe de lojas (próximo passo)</div>
+          <div class="mt-3 text-slate-500 text-sm">Carregando…</div>
+        </div>
+      </section>
+
+      <!-- FERISTAS -->
+      <section id="tab-feristas" class="tabSection hidden">
+        <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="font-medium">Feristas</div>
+          <div class="text-sm text-slate-500">Vamos criar o cálculo e a tela (próximo passo)</div>
+          <div class="mt-3 text-slate-500 text-sm">Carregando…</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+    const tabBtns = document.querySelectorAll(".tabBtn");
+    const tabSections = {
+      geral: document.getElementById("tab-geral"),
+      regional: document.getElementById("tab-regional"),
+      supervisor: document.getElementById("tab-supervisor"),
+      promotor: document.getElementById("tab-promotor"),
+      feristas: document.getElementById("tab-feristas"),
+    };
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabBtns.forEach(b => b.className = "tabBtn px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium");
+        btn.className = "tabBtn px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium";
+
+        Object.values(tabSections).forEach(s => s.classList.add("hidden"));
+        tabSections[btn.dataset.tab].classList.remove("hidden");
+      });
+    });
+
+    // No próximo passo, vamos:
+    // 1) gerar docs/data.json no Python
+    // 2) aqui fazer fetch("data.json") e preencher KPIs, filtros, tabelas e gráficos.
+  </script>
 </body>
 </html>

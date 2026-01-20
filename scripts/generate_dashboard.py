@@ -200,6 +200,55 @@ def main():
     else:
         sup_resumo = None
 
+    # =========================
+    # RESUMO POR REGIONAL VOLUME
+    # =========================
+    if (COL_REGIONAL is not None) and (COL_REGIONAL in df.columns):
+        agg_reg = {
+            "PROMOTORES_REGIONAL": (COL_PROMOTOR, "nunique"),
+        }
+
+        if (COL_SUPERVISOR is not None) and (COL_SUPERVISOR in df.columns):
+            agg_reg["SUPERVISORES_REGIONAL"] = (COL_SUPERVISOR, "nunique")
+        else:
+            agg_reg["SUPERVISORES_REGIONAL"] = ("HORAS_SEMANA_LOJA", "count")
+
+        if (COL_LOJA is not None) and (COL_LOJA in df.columns):
+            agg_reg["LOJAS_REGIONAL"] = (COL_LOJA, "nunique")
+        else:
+            agg_reg["LOJAS_REGIONAL"] = ("HORAS_SEMANA_LOJA", "count")
+
+        if (COL_CIDADE is not None) and (COL_CIDADE in df.columns):
+            agg_reg["CIDADES_REGIONAL"] = (COL_CIDADE, "nunique")
+        else:
+            agg_reg["CIDADES_REGIONAL"] = ("HORAS_SEMANA_LOJA", "count")
+
+        reg_base = df.groupby(COL_REGIONAL).agg(**agg_reg).reset_index()
+
+        # horas por regional: ligar promotor -> regional e somar horas promotor
+        promotor_reg = (
+            df[[COL_PROMOTOR, COL_REGIONAL]]
+            .dropna()
+            .drop_duplicates()
+        )
+        horas_prom_reg = horas_prom.merge(promotor_reg, on=COL_PROMOTOR, how="left")
+
+        reg_horas = horas_prom_reg.groupby(COL_REGIONAL).agg(
+            HORAS_MES_REGIONAL=("HORAS_MES_PREVISTA", "sum"),
+            PROMOTORES_ACIMA_TETO=("ULTRAPASSOU_TETO", "sum"),
+            HORAS_EXCEDENTES_REGIONAL=("HORAS_EXCEDENTES", "sum"),
+        ).reset_index()
+
+        reg_resumo = reg_base.merge(reg_horas, on=COL_REGIONAL, how="left").fillna(0)
+
+        reg_resumo["MEDIA_LOJAS_POR_PROMOTOR_NO_REG"] = (
+            reg_resumo["LOJAS_REGIONAL"] / reg_resumo["PROMOTORES_REGIONAL"].replace({0: 1})
+        )
+
+        reg_resumo = reg_resumo.sort_values("HORAS_MES_REGIONAL", ascending=False)
+    else:
+        reg_resumo = None
+
     cards_html = f"""
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
       <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Linhas válidas (CAMIL/SPOT)</b><div style="font-size:26px;">{total_linhas}</div></div>
@@ -216,6 +265,53 @@ def main():
       <div style="padding:12px;border:1px solid #ddd;border-radius:10px;"><b>Média lojas / promotor</b><div style="font-size:26px;">{fmt_num(media_lojas_por_prom)}</div></div>
     </div>
     """
+
+    # =========================
+    # HTML - TABELA REGIONAIS
+    # =========================
+    if reg_resumo is not None:
+        reg_rows = []
+        for _, r in reg_resumo.iterrows():
+            reg = str(r.get(COL_REGIONAL, "")).strip()
+            reg_rows.append(f"""
+              <tr>
+                <td>{reg}</td>
+                <td style="text-align:right;">{int(r.get("SUPERVISORES_REGIONAL", 0))}</td>
+                <td style="text-align:right;">{int(r.get("PROMOTORES_REGIONAL", 0))}</td>
+                <td style="text-align:right;">{int(r.get("LOJAS_REGIONAL", 0))}</td>
+                <td style="text-align:right;">{int(r.get("CIDADES_REGIONAL", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("MEDIA_LOJAS_POR_PROMOTOR_NO_REG", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("HORAS_MES_REGIONAL", 0))}</td>
+                <td style="text-align:right;">{int(r.get("PROMOTORES_ACIMA_TETO", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("HORAS_EXCEDENTES_REGIONAL", 0))}</td>
+              </tr>
+            """)
+
+        tabela_regionais_html = f"""
+        <h2 style="margin-top:22px;">Resumo por Regional Volume</h2>
+        <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f7f7f7;">
+                <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Regional</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Supervisores</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Promotores</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Lojas</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Cidades</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Média lojas/promotor</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (regional)</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Prom. &gt; {TETO_CLT}h</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas excedentes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {''.join(reg_rows)}
+            </tbody>
+          </table>
+        </div>
+        """
+    else:
+        tabela_regionais_html = ""
 
     # =========================
     # HTML - TABELA SUPERVISORES
@@ -320,6 +416,8 @@ def main():
   </p>
 
   {cards_html}
+
+  {tabela_regionais_html}
 
   {tabela_supervisores_html}
 

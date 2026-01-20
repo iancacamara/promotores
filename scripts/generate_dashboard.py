@@ -123,10 +123,10 @@ def main():
     # KPIs
     total_linhas = int(len(df))
     qtd_promotores = safe_nunique(df[COL_PROMOTOR])
-    qtd_supervisores = safe_nunique(df[COL_SUPERVISOR]) if COL_SUPERVISOR in df.columns else 0
-    qtd_lojas = safe_nunique(df[COL_LOJA]) if COL_LOJA in df.columns else 0
-    qtd_bandeiras = safe_nunique(df[COL_BANDEIRA]) if COL_BANDEIRA in df.columns else 0
-    qtd_cidades = safe_nunique(df[COL_CIDADE]) if COL_CIDADE in df.columns else 0
+    qtd_supervisores = safe_nunique(df[COL_SUPERVISOR]) if (COL_SUPERVISOR in df.columns) else 0
+    qtd_lojas = safe_nunique(df[COL_LOJA]) if (COL_LOJA in df.columns) else 0
+    qtd_bandeiras = safe_nunique(df[COL_BANDEIRA]) if (COL_BANDEIRA in df.columns) else 0
+    qtd_cidades = safe_nunique(df[COL_CIDADE]) if (COL_CIDADE in df.columns) else 0
 
     total_horas_mes_prevista = safe_sum(horas_prom["HORAS_MES_PREVISTA"])
     qtd_promotores_acima_teto = int(horas_prom["ULTRAPASSOU_TETO"].sum())
@@ -139,7 +139,7 @@ def main():
     else:
         media_prom_por_sup = 0.0
 
-    if COL_SUPERVISOR in df.columns and COL_LOJA in df.columns:
+    if (COL_SUPERVISOR in df.columns) and (COL_LOJA in df.columns):
         lojas_por_sup = df.dropna(subset=[COL_SUPERVISOR, COL_LOJA]).groupby(COL_SUPERVISOR)[COL_LOJA].nunique()
         media_lojas_por_sup = float(lojas_por_sup.mean()) if len(lojas_por_sup) else 0.0
     else:
@@ -153,6 +153,52 @@ def main():
 
     # Top 20 promotores
     top = horas_prom.sort_values("HORAS_MES_PREVISTA", ascending=False).head(20)
+
+    # =========================
+    # RESUMO POR SUPERVISOR FINAL
+    # =========================
+    if COL_SUPERVISOR in df.columns:
+        # base: promotores, lojas, cidades por supervisor
+        agg_dict = {
+            "PROMOTORES_SUPERVISOR": (COL_PROMOTOR, "nunique"),
+        }
+        if (COL_LOJA is not None) and (COL_LOJA in df.columns):
+            agg_dict["LOJAS_SUPERVISOR"] = (COL_LOJA, "nunique")
+        else:
+            agg_dict["LOJAS_SUPERVISOR"] = ("HORAS_SEMANA_LOJA", "count")
+
+        if (COL_CIDADE is not None) and (COL_CIDADE in df.columns):
+            agg_dict["CIDADES_SUPERVISOR"] = (COL_CIDADE, "nunique")
+        else:
+            agg_dict["CIDADES_SUPERVISOR"] = ("HORAS_SEMANA_LOJA", "count")
+
+        sup_base = df.groupby(COL_SUPERVISOR).agg(**agg_dict).reset_index()
+
+        # horas do time: precisa ligar PROMOTOR -> SUPERVISOR
+        promotor_sup = (
+            df[[COL_PROMOTOR, COL_SUPERVISOR]]
+            .dropna()
+            .drop_duplicates()
+        )
+
+        horas_prom_sup = horas_prom.merge(promotor_sup, on=COL_PROMOTOR, how="left")
+
+        sup_horas = horas_prom_sup.groupby(COL_SUPERVISOR).agg(
+            HORAS_MES_TIME=("HORAS_MES_PREVISTA", "sum"),
+            PROMOTORES_ACIMA_TETO=("ULTRAPASSOU_TETO", "sum"),
+            HORAS_EXCEDENTES_TIME=("HORAS_EXCEDENTES", "sum"),
+        ).reset_index()
+
+        sup_resumo = sup_base.merge(sup_horas, on=COL_SUPERVISOR, how="left").fillna(0)
+
+        # média lojas/promotor dentro do supervisor
+        sup_resumo["MEDIA_LOJAS_POR_PROMOTOR_NO_SUP"] = (
+            sup_resumo["LOJAS_SUPERVISOR"] / sup_resumo["PROMOTORES_SUPERVISOR"].replace({0: 1})
+        )
+
+        sup_resumo = sup_resumo.sort_values("HORAS_MES_TIME", ascending=False)
+    else:
+        sup_resumo = None
 
     cards_html = f"""
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
@@ -171,6 +217,54 @@ def main():
     </div>
     """
 
+    # =========================
+    # HTML - TABELA SUPERVISORES
+    # =========================
+    if sup_resumo is not None:
+        sup_rows = []
+        for _, r in sup_resumo.iterrows():
+            sup = str(r.get(COL_SUPERVISOR, "")).strip()
+            sup_rows.append(f"""
+              <tr>
+                <td>{sup}</td>
+                <td style="text-align:right;">{int(r.get("PROMOTORES_SUPERVISOR", 0))}</td>
+                <td style="text-align:right;">{int(r.get("LOJAS_SUPERVISOR", 0))}</td>
+                <td style="text-align:right;">{int(r.get("CIDADES_SUPERVISOR", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("MEDIA_LOJAS_POR_PROMOTOR_NO_SUP", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("HORAS_MES_TIME", 0))}</td>
+                <td style="text-align:right;">{int(r.get("PROMOTORES_ACIMA_TETO", 0))}</td>
+                <td style="text-align:right;">{fmt_num(r.get("HORAS_EXCEDENTES_TIME", 0))}</td>
+              </tr>
+            """)
+
+        tabela_supervisores_html = f"""
+        <h2 style="margin-top:22px;">Resumo por Supervisor Final</h2>
+        <div style="overflow:auto;border:1px solid #eee;border-radius:10px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f7f7f7;">
+                <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Supervisor</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Promotores</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Lojas</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Cidades</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Média lojas/promotor</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas mês (time)</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Prom. &gt; {TETO_CLT}h</th>
+                <th style="text-align:right;padding:10px;border-bottom:1px solid #eee;">Horas excedentes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {''.join(sup_rows)}
+            </tbody>
+          </table>
+        </div>
+        """
+    else:
+        tabela_supervisores_html = ""
+
+    # =========================
+    # HTML - TOP 20 PROMOTORES
+    # =========================
     rows = []
     for _, r in top.iterrows():
         prom = str(r.get(COL_PROMOTOR, "")).strip()
@@ -226,6 +320,8 @@ def main():
   </p>
 
   {cards_html}
+
+  {tabela_supervisores_html}
 
   {tabela_html}
 
